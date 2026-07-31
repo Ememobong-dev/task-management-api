@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getApplicationInfo() {
+    return {
+      name: 'Task Management API',
+      status: 'running',
+      message: 'NestJs Project',
+    };
   }
 }
