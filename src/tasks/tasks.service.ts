@@ -1,47 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class TasksService {
-  private readonly tasks = [
-    {
-      id: 1,
-      title: 'Learn NestJS fundamentals',
-      completed: true,
-    },
-    {
-      id: 2,
-      title: 'Connect PostgreSQL',
-      completed: false,
-    },
-    {
-      id: 3,
-      title: 'Learn Prisma ORM',
-      completed: false,
-    },
-  ];
-  private nextId = 4;
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return this.tasks;
+  async findAll() {
+    return this.prisma.task.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    const task = this.tasks.find((task) => task.id === id);
+  async findOne(id: number) {
+    const task = await this.prisma.task.findUnique({
+      where: {
+        id,
+      },
+    });
     if (!task) {
       throw new NotFoundException(`Task wth ID ${id} was not found`);
     }
     return task;
   }
 
-  addTask(createTaskDto: CreateTaskDto) {
-    const task = {
-      id: this.nextId++,
-      title: createTaskDto.title.trim(),
-      completed: false,
-    };
-
-    this.tasks.push(task);
-    return task;
+  async addTask(createTaskDto: CreateTaskDto) {
+    return this.prisma.task.create({
+      data: {
+        title: createTaskDto.title.trim(),
+      },
+    });
   }
 }
