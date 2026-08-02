@@ -15,8 +15,12 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return application information', () => {
+      expect(appController.getHello()).toEqual({
+        name: 'Task Management API',
+        status: 'running',
+        message: 'NestJs Project',
+      });
     });
   });
 });
