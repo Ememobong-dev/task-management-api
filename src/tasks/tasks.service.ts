@@ -87,9 +87,29 @@ export class TasksService {
   }
 
   async addTask(createTaskDto: CreateTaskDto) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: createTaskDto.projectId,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(
+        `Project with ID ${createTaskDto.projectId} was not found`,
+      );
+    }
+
     return this.prisma.task.create({
       data: {
         title: createTaskDto.title.trim(),
+        project: {
+          connect: {
+            id: createTaskDto.projectId,
+          },
+        },
+      },
+      include: {
+        project: true,
       },
     });
   }
