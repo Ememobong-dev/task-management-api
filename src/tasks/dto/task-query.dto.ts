@@ -37,6 +37,12 @@ export class TaskQueryDto {
   search?: string;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  projectId?: number;
+
+  @IsOptional()
   @IsIn(['id', 'title', 'createdAt'])
   sortBy: 'id' | 'title' | 'createdAt' = 'createdAt';
 

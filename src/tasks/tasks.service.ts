@@ -9,7 +9,8 @@ export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: TaskQueryDto) {
-    const { page, limit, completed, search, sortBy, sortOrder } = query;
+    const { page, limit, completed, search, projectId, sortBy, sortOrder } =
+      query;
 
     const skip = (page - 1) * limit;
 
@@ -24,6 +25,10 @@ export class TasksService {
         contains: search.trim(),
         mode: 'insensitive',
       };
+    }
+
+    if (projectId !== undefined) {
+      where.projectId = projectId;
     }
 
     let orderBy: Prisma.TaskOrderByWithRelationInput;
@@ -53,6 +58,9 @@ export class TasksService {
         skip,
         take: limit,
         orderBy,
+        include: {
+          project: true,
+        },
       }),
 
       this.prisma.task.count({
@@ -116,6 +124,20 @@ export class TasksService {
 
   async updateTask(id: number, updateTaskDto: UpdateTaskDto) {
     await this.findOne(id);
+
+    if (updateTaskDto.projectId !== undefined) {
+      const project = await this.prisma.project.findUnique({
+        where: {
+          id: updateTaskDto.projectId,
+        },
+      });
+      if (!project) {
+        throw new NotFoundException(
+          `Project with ID ${updateTaskDto.projectId} was not found`,
+        );
+      }
+    }
+
     return this.prisma.task.update({
       where: { id },
       data: {
@@ -126,6 +148,17 @@ export class TasksService {
         ...(updateTaskDto.completed !== undefined && {
           completed: updateTaskDto.completed,
         }),
+
+        ...(updateTaskDto.projectId !== undefined && {
+          project: {
+            connect: {
+              id: updateTaskDto.projectId,
+            },
+          },
+        }),
+      },
+      include: {
+        project: true,
       },
     });
   }

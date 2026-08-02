@@ -1,9 +1,11 @@
 import {
   IsBoolean,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
+  Min,
 } from 'class-validator';
 
 export class UpdateTaskDto {
@@ -16,4 +18,9 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsBoolean()
   completed?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  projectId?: number;
 }
