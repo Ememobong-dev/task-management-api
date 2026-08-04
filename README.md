@@ -1,98 +1,515 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Task Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful backend API for managing projects and tasks, built with **NestJS**, **PostgreSQL**, **Prisma ORM**, and **Docker**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The project was built as a practical introduction to structured backend development with NestJS while covering database relationships, validation, pagination, filtering, testing, Docker, migrations, error handling, and API documentation.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+### Projects
 
-```bash
-$ npm install
+- Create projects
+- Retrieve all projects
+- Retrieve a project with its tasks
+- Delete empty projects
+- Prevent deletion of projects that still contain tasks
+
+### Tasks
+
+- Create tasks
+- Retrieve tasks
+- Retrieve a single task
+- Update task titles
+- Mark tasks as completed or incomplete
+- Move tasks between projects
+- Delete tasks
+- Filter tasks by project
+- Filter tasks by completion status
+- Search tasks by title
+- Sort tasks
+- Paginate task results
+
+---
+
+## Tech Stack
+
+- **Node.js**
+- **TypeScript**
+- **NestJS**
+- **PostgreSQL**
+- **Prisma ORM**
+- **Docker**
+- **Docker Compose**
+- **Jest**
+- **Supertest**
+- **Swagger / OpenAPI**
+
+---
+
+## Architecture
+
+The application follows a modular NestJS architecture:
+
+```text
+HTTP Request
+    ↓
+Controller
+    ↓
+Service
+    ↓
+Prisma Service
+    ↓
+Prisma Client
+    ↓
+PostgreSQL
 ```
 
-## Compile and run the project
+### Main Application Modules
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```text
+AppModule
+├── TasksModule
+├── ProjectsModule
+└── PrismaModule
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Database Relationships
 
-# e2e tests
-$ npm run test:e2e
+The application uses a **one-to-many relationship** between projects and tasks.
 
-# test coverage
-$ npm run test:cov
+```text
+Project
+   │
+   ├── Task
+   ├── Task
+   └── Task
 ```
 
-## Deployment
+A project can contain multiple tasks.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+A task belongs to a project through the `projectId` foreign key.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Conceptually:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```text
+tasks.projectId
+      ↓
+projects.id
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+The database also uses referential integrity rules to prevent a project from being deleted while tasks still reference it.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+# Getting Started
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Prerequisites
 
-## Support
+Ensure you have the following installed:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Node.js
+- npm
+- Docker
+- Docker Compose
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Running Locally
 
-## License
+### 1. Install Dependencies
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm install
+```
+
+### 2. Start PostgreSQL with Docker
+
+```bash
+docker compose up -d postgres
+```
+
+Check the database container:
+
+```bash
+docker compose ps
+```
+
+### 3. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### 4. Apply Database Migrations
+
+For development:
+
+```bash
+npx prisma migrate dev
+```
+
+To apply existing migrations:
+
+```bash
+npx prisma migrate deploy
+```
+
+### 5. Start NestJS
+
+```bash
+npm run start:dev
+```
+
+The API will be available at:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## Running Everything with Docker
+
+The complete application can be run using Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+This starts:
+
+```text
+Docker Compose
+├── PostgreSQL
+├── Prisma migration service
+└── NestJS API
+```
+
+### Check Running Containers
+
+```bash
+docker compose ps -a
+```
+
+### View Application Logs
+
+```bash
+docker compose logs -f app
+```
+
+### Stop the Application
+
+```bash
+docker compose down
+```
+
+Database data is persisted using a Docker volume, so stopping or removing the containers does not automatically delete the database.
+
+> **Warning**
+>
+> Avoid running the following command unless you intentionally want to delete the database volume and its stored data:
+
+```bash
+docker compose down -v
+```
+
+---
+
+# API Documentation
+
+Swagger/OpenAPI documentation is available at:
+
+```text
+http://localhost:3000/docs
+```
+
+The raw OpenAPI JSON specification is available at:
+
+```text
+http://localhost:3000/docs-json
+```
+
+Swagger UI can also be used to test the API interactively.
+
+---
+
+## API Resources
+
+The application exposes two primary resources:
+
+```text
+/tasks
+/projects
+```
+
+### Task Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/tasks` | Retrieve paginated tasks |
+| `GET` | `/tasks/:id` | Retrieve a single task |
+| `POST` | `/tasks` | Create a task |
+| `PATCH` | `/tasks/:id` | Update a task |
+| `DELETE` | `/tasks/:id` | Delete a task |
+
+### Project Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/projects` | Retrieve all projects |
+| `GET` | `/projects/:id` | Retrieve a project with its tasks |
+| `POST` | `/projects` | Create a project |
+| `DELETE` | `/projects/:id` | Delete an empty project |
+
+For complete request parameters, request bodies, response schemas, validation rules, and error responses, visit the Swagger documentation at `/docs`.
+
+---
+
+# Database Migrations
+
+**Prisma Migrate** is used to version and manage database schema changes.
+
+### Create a New Development Migration
+
+```bash
+npx prisma migrate dev --name migration_name
+```
+
+### Apply Existing Migrations
+
+```bash
+npx prisma migrate deploy
+```
+
+### Regenerate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+Migration files are stored inside:
+
+```text
+prisma/migrations/
+```
+
+---
+
+# Testing
+
+The project contains both **unit tests** and **end-to-end tests**.
+
+## Unit Tests
+
+Run:
+
+```bash
+npm run test
+```
+
+Unit tests isolate individual services and use mocked Prisma dependencies.
+
+Example test flow:
+
+```text
+TasksService
+     ↓
+Mock PrismaService
+```
+
+This allows service logic to be tested without connecting to PostgreSQL.
+
+---
+
+## End-to-End Tests
+
+Run:
+
+```bash
+npm run test:e2e
+```
+
+E2E tests exercise the complete application flow:
+
+```text
+HTTP Request
+     ↓
+NestJS
+     ↓
+Validation
+     ↓
+Controller
+     ↓
+Service
+     ↓
+Prisma
+     ↓
+PostgreSQL
+```
+
+A separate test database should be used for E2E tests to prevent automated tests from modifying development data.
+
+---
+
+## Test Coverage
+
+Run:
+
+```bash
+npm run test:cov
+```
+
+---
+
+# Health Check
+
+The API exposes a health endpoint:
+
+```http
+GET /health
+```
+
+Example:
+
+```text
+http://localhost:3000/health
+```
+
+The health endpoint can be used by deployment platforms, monitoring systems, load balancers, and container orchestration tools to verify that the API is running.
+
+---
+
+# Useful Commands
+
+### Development Server
+
+```bash
+npm run start:dev
+```
+
+### Production Build
+
+```bash
+npm run build
+```
+
+### Production Server
+
+```bash
+npm run start:prod
+```
+
+### Unit Tests
+
+```bash
+npm run test
+```
+
+### End-to-End Tests
+
+```bash
+npm run test:e2e
+```
+
+### Test Coverage
+
+```bash
+npm run test:cov
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+### Format
+
+```bash
+npm run format
+```
+
+### Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### Create a Migration
+
+```bash
+npx prisma migrate dev --name migration_name
+```
+
+### Apply Existing Migrations
+
+```bash
+npx prisma migrate deploy
+```
+
+### Start Docker Stack
+
+```bash
+docker compose up --build -d
+```
+
+### View Docker Services
+
+```bash
+docker compose ps -a
+```
+
+### Follow API Logs
+
+```bash
+docker compose logs -f app
+```
+
+### Stop Docker Stack
+
+```bash
+docker compose down
+```
+
+---
+
+# Concepts Demonstrated
+
+This project demonstrates:
+
+- NestJS modules, controllers, services, and dependency injection
+- REST API design
+- DTO validation
+- Pipes
+- Global exception filters
+- Environment configuration and validation
+- PostgreSQL relational modelling
+- Primary and foreign keys
+- One-to-many relationships
+- Referential integrity
+- Prisma ORM
+- Prisma migrations
+- Prisma relation queries
+- Filtering
+- Searching
+- Sorting
+- Offset pagination
+- Database transactions
+- PostgreSQL indexing
+- Unit testing
+- End-to-end testing
+- Docker containers
+- Docker networking
+- Docker volumes
+- Multi-stage Docker builds
+- Swagger/OpenAPI documentation
+
+---
+
+# License
+
+This project is intended for **learning and demonstration purposes**.
