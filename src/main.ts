@@ -1,8 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,9 +18,26 @@ async function bootstrap() {
 
   app.useGlobalFilters(new GlobalExceptionFilter());
 
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Task Management API')
+    .setDescription(
+      'A REST API for managing projects and tasks, built with NestJS, Prisma, and PostgreSQL.',
+    )
+    .setVersion('1.0.0')
+    .addTag('Tasks', 'Create, retrieve, update, filter, and delete tasks')
+    .addTag('Projects', 'Create, retrieve, and delete projects')
+    .build();
+
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, swaggerConfig);
+
+  SwaggerModule.setup('docs', app, documentFactory, {
+    jsonDocumentUrl: 'docs-json',
+  });
+
   const configService = app.get(ConfigService);
 
-  const port = configService.get<number>('PORT', 3000);
+  const port = configService.getOrThrow<number>('PORT');
 
   await app.listen(port);
 }

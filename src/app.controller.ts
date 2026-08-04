@@ -1,12 +1,19 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+// import { AppService } from './app.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@ApiTags('System')
+@Controller('health')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello() {
-    return this.appService.getApplicationInfo();
+  @ApiOperation({
+    summary: 'Check API health',
+  })
+  health() {
+    return {
+      status: 'ok',
+      service: 'Task Management API',
+      timestamp: new Date().toISOString(),
+    };
   }
 }
