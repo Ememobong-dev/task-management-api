@@ -509,7 +509,3 @@ This project demonstrates:
 - Swagger/OpenAPI documentation
 
 ---
-
-# License
-
-This project is intended for **learning and demonstration purposes**.
